@@ -7,9 +7,11 @@ const FRAME_COUNT = 70;
 const SCROLL_VH = 380;
 /** Eager-load this many frames right after frame 0 for early scrub */
 const EAGER_COUNT = 16;
+/** Versioned path — busts immutable CDN cache from older cartoon frames70 */
+const HERO_ASSET_BASE = "/hero/f70b1";
 
 function frameSrc(i: number) {
-  return `/hero/frames/frame-${String(i).padStart(3, "0")}.webp`;
+  return `${HERO_ASSET_BASE}/frame-${String(i).padStart(3, "0")}.webp`;
 }
 
 /**
@@ -217,7 +219,7 @@ export function HeroScroll() {
         {!firstReady ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src="/hero/hero-poster.webp"
+            src={`${HERO_ASSET_BASE}/poster.webp`}
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
             style={{ objectPosition: "center center" }}

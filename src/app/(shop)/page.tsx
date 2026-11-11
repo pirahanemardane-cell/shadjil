@@ -166,13 +166,13 @@ export default async function HomePage() {
       <link
         rel="preload"
         as="image"
-        href="/hero/hero-poster.webp"
+        href="/hero/f70b1/poster.webp"
         type="image/webp"
       />
       <link
         rel="preload"
         as="image"
-        href="/hero/frames/frame-001.webp"
+        href="/hero/f70b1/frame-001.webp"
         type="image/webp"
       />
       <HeroScroll />
