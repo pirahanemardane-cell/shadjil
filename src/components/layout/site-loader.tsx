@@ -28,7 +28,7 @@ export function SiteLoaderProvider({ children }: { children: React.ReactNode }) 
   if (loading) {
     return (
       <div
-        className="pm-site-loader fixed inset-0 z-[9999] flex items-center justify-center"
+        className="shadjil-site-loader fixed inset-0 z-[9999] flex items-center justify-center"
         role="status"
         aria-live="polite"
         aria-label="در حال بارگذاری"

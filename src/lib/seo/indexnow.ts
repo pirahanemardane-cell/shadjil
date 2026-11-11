@@ -1,7 +1,7 @@
 const SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://shadjil.ir").replace(/\/$/, "");
 /** کلید ثابت — فایل public/{key}.txt باید در دسترس باشد */
 export const INDEXNOW_KEY =
-  process.env.INDEXNOW_KEY?.trim() || "pm-indexnow-8f3a2c1b9e7d4a06";
+  process.env.INDEXNOW_KEY?.trim() || "shadjil-indexnow-8f3a2c1b9e7d4a06";
 
 export async function submitIndexNow(urls: string[]): Promise<void> {
   const list = [...new Set(urls.map((u) => u.trim()).filter(Boolean))];
