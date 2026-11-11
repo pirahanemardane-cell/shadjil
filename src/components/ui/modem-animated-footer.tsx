@@ -29,8 +29,8 @@ interface FooterProps {
 
 export function Footer({
   brandName = "شادجیل",
-  watermarkName = "PirahanMardane",
-  brandDescription = "فروشگاه تخصصی شادجیل — رسمی، اسپرت، ،  و سوغات",
+  watermarkName = "Shadjil",
+  brandDescription = "فروشگاه تخصصی شادجیل — آجیل، خشکبار، خرما و سوغات",
   socialLinks = [],
   navLinks = [],
   creatorName: _creatorName,
@@ -45,8 +45,11 @@ export function Footer({
           <div className="mb-8 flex w-full flex-col sm:mb-10 md:mb-6">
             <div className="flex w-full flex-col items-center">
               <div className="flex flex-1 flex-col items-center space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-primary whitespace-nowrap text-6xl font-thin tracking-tight">
+                <div className="flex flex-col items-center gap-3">
+                  {brandIcon ? (
+                    <div className="flex items-center justify-center">{brandIcon}</div>
+                  ) : null}
+                  <span className="text-primary whitespace-nowrap text-4xl font-thin tracking-tight sm:text-5xl md:text-6xl">
                     {brandName}
                   </span>
                 </div>

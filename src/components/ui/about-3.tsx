@@ -41,8 +41,8 @@ export function About3({
     alt: "خشکبار و آجیل",
   },
   breakout = {
-    src: "/brand/logo-light-transparent.webp",
-    alt: "لوگو",
+    src: "/brand/logo.webp",
+    alt: "شادجیل",
     title: "تازه، شفاف، قابل اعتماد",
     description:
       "از راهنمای بسته‌بندی شفاف تا مرجوعی آسان — هدف ما اعتماد قبل از خرید است.",
@@ -77,15 +77,9 @@ export function About3({
               </p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/brand/logo-light-transparent.webp"
-                alt={breakout.alt || "لوگو"}
-                className="mb-3 h-14 w-auto object-contain dark:hidden"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/brand/logo-dark-transparent.webp"
-                alt={breakout.alt || "لوگو"}
-                className="mb-3 hidden h-14 w-auto object-contain dark:block"
+                src={breakout.src || "/brand/logo.webp"}
+                alt={breakout.alt || "شادجیل"}
+                className="mb-3 h-16 w-16 object-contain"
               />
               {breakout.description ? (
                 <p className="text-muted-foreground">{breakout.description}</p>

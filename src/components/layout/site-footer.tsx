@@ -2,6 +2,7 @@
 
 import { Mail } from "lucide-react";
 import { Footer } from "@/components/ui/modem-animated-footer";
+import { Logo } from "@/components/brand/logo";
 
 function _InstagramIcon({ className }: { className?: string }) {
   return (
@@ -28,6 +29,7 @@ export function SiteFooter() {
       brandName="شادجیل"
       watermarkName="Shadjil"
       brandDescription="فروشگاه تخصصی آجیل، خشکبار، خرما و سوغات"
+      brandIcon={<Logo size="footer" link={false} />}
       socialLinks={[
         {
           icon: <Mail className="h-6 w-6" />,

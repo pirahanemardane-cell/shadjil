@@ -8,7 +8,7 @@ const _MARGIN_RATIO = 0.03;
 const WATERMARK_OPACITY = 0.40;
 
 /** فقط این فایل — طبق درخواست */
-const WATERMARK_FILE = "logo-light-transparent.webp";
+const WATERMARK_FILE = "logo.webp";
 
 /** URL عمومی برای fallback وقتی filesystem روی serverless فایل را نبیند */
 const WATERMARK_PUBLIC_URL =
