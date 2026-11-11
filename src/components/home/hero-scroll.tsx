@@ -10,8 +10,8 @@ const SCROLL_VH = 380;
 const EAGER_COUNT = 16;
 /** Versioned path — busts immutable CDN cache from older cartoon frames70 */
 const HERO_ASSET_BASE = "/hero/f70b1";
-/** Soft crossfade width at phase boundaries (1-based frames) */
-const PHASE_FADE = 3.25;
+/** Soft crossfade width at phase boundaries (~3–4 frame overlap) */
+const PHASE_FADE = 3.75;
 
 function frameSrc(i: number) {
   return `${HERO_ASSET_BASE}/frame-${String(i).padStart(3, "0")}.webp`;
@@ -235,8 +235,9 @@ export function HeroScroll() {
   }, [applyPhaseOpacities, drawIndex, firstReady]);
 
   const textShadowStrong =
-    "0 2px 18px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.7)";
-  const textShadowSoft = "0 1px 10px rgba(0,0,0,0.5)";
+    "0 2px 24px rgba(0,0,0,0.72), 0 0 2px rgba(0,0,0,0.85), 0 4px 40px rgba(0,0,0,0.45)";
+  const textShadowSoft =
+    "0 2px 18px rgba(0,0,0,0.65), 0 0 2px rgba(0,0,0,0.75), 0 3px 28px rgba(0,0,0,0.4)";
 
   return (
     <section
@@ -282,33 +283,26 @@ export function HeroScroll() {
           aria-hidden
         />
 
-        {/* Soft center vignette — keeps mid-frame type legible over busy nuts */}
+        {/* Soft center vignette — type sits on this + strong shadow (no glass panel) */}
         <div
           className="pointer-events-none absolute inset-0 z-[1]"
           style={{
             background:
-              "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(18,14,10,0.58) 0%, rgba(18,14,10,0.28) 45%, rgba(18,14,10,0) 72%)",
+              "radial-gradient(ellipse 68% 52% at 50% 50%, rgba(18,14,10,0.52) 0%, rgba(18,14,10,0.22) 48%, rgba(18,14,10,0) 74%)",
           }}
           aria-hidden
         />
 
         <div
-          className="absolute inset-0 z-[2] flex items-center justify-center px-4 sm:px-8"
+          className="absolute inset-0 z-[2] flex items-center justify-center px-5 sm:px-10"
           dir="rtl"
         >
           <div
             className={
               firstReady
-                ? "hero-copy-panel w-full max-w-2xl rounded-2xl px-5 py-5 text-center sm:px-8 sm:py-7 animate-hero-copy-in"
-                : "hero-copy-panel w-full max-w-2xl rounded-2xl px-5 py-5 text-center sm:px-8 sm:py-7 opacity-0"
+                ? "w-full max-w-2xl text-center animate-hero-copy-in"
+                : "w-full max-w-2xl text-center opacity-0"
             }
-            style={{
-              background: "rgba(18, 14, 10, 0.55)",
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
-            }}
           >
             <div className="relative grid place-items-center">
               {/* Phase 1 — frames 1–22 */}
@@ -318,7 +312,7 @@ export function HeroScroll() {
                 style={{ opacity: 1 }}
               >
                 <h1
-                  className="font-extrabold text-[1.55rem] leading-[1.45] text-white sm:text-3xl md:text-4xl"
+                  className="font-extrabold mx-auto max-w-[14ch] text-[1.85rem] leading-[1.28] text-white sm:max-w-[16ch] sm:text-4xl sm:leading-[1.25] md:text-5xl md:leading-[1.22]"
                   style={{ textShadow: textShadowStrong }}
                 >
                   شادجیل یعنی شادیِ جویدن
@@ -333,7 +327,7 @@ export function HeroScroll() {
                 aria-hidden
               >
                 <p
-                  className="font-medium text-base leading-8 text-white/95 sm:text-lg sm:leading-9 md:text-xl"
+                  className="font-medium mx-auto max-w-[28ch] text-base leading-7 text-white sm:text-lg sm:leading-8 md:text-xl md:leading-9"
                   style={{ textShadow: textShadowSoft }}
                 >
                   از آجیل تا خشکبار و سوغات؛ هر لقمه یه لبخند
@@ -349,7 +343,7 @@ export function HeroScroll() {
               >
                 <Link
                   href="/products"
-                  className="font-regular bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm transition-colors sm:px-6 sm:py-3 sm:text-base"
+                  className="font-regular inline-flex items-center justify-center rounded-xl bg-[#AA6031] px-6 py-3 text-sm text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:px-7 sm:py-3.5 sm:text-base"
                 >
                   یه مشت شادی بردار
                 </Link>
