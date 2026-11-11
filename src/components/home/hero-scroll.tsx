@@ -33,28 +33,43 @@ function phaseOpacities(frame1Based: number) {
   ] as const;
 }
 
-/** Grow font as large as possible while keeping a single unwrapped line. */
-function fitSingleLine(
-  el: HTMLElement | null,
-  container: HTMLElement | null,
-  maxPx: number,
-  minPx: number,
-) {
-  if (!el || !container) return;
-  const avail = Math.max(0, container.clientWidth - 2);
-  if (avail < 8) return;
+const FIT_PAD_PX = 24; // small side inset from viewport edges
+
+/**
+ * Binary-search the largest font-size that keeps `el` on one line within `availPx`.
+ * No artificial ceiling — hi starts from the available width itself.
+ */
+function fitSingleLine(el: HTMLElement | null, availPx: number) {
+  if (!el || availPx < 8) return;
   el.style.whiteSpace = "nowrap";
-  let lo = minPx;
-  let hi = maxPx;
+  el.style.display = "inline-block";
+  el.style.maxWidth = "none";
+  el.style.width = "auto";
+
+  let lo = 8;
+  // Upper bound: wider than any multi-glyph line can ever need
+  let hi = Math.max(availPx, 64);
+
+  // Ensure we start below overflow so search is valid
   el.style.fontSize = `${hi}px`;
-  if (el.scrollWidth <= avail) return;
-  for (let i = 0; i < 14; i++) {
-    const mid = (lo + hi) / 2;
-    el.style.fontSize = `${mid}px`;
-    if (el.scrollWidth <= avail) lo = mid;
-    else hi = mid;
+  if (el.scrollWidth > availPx) {
+    for (let i = 0; i < 18; i++) {
+      const mid = (lo + hi) / 2;
+      el.style.fontSize = `${mid}px`;
+      if (el.scrollWidth <= availPx) lo = mid;
+      else hi = mid;
+    }
+    el.style.fontSize = `${lo}px`;
   }
-  el.style.fontSize = `${lo}px`;
+
+  // Final safety: nudge down if still overflowing (subpixel / font metrics)
+  let size = parseFloat(el.style.fontSize) || lo;
+  let guard = 0;
+  while (el.scrollWidth > availPx && size > 8 && guard < 40) {
+    size -= 0.5;
+    el.style.fontSize = `${size}px`;
+    guard += 1;
+  }
 }
 
 /**
@@ -80,14 +95,21 @@ export function HeroScroll() {
   const [firstReady, setFirstReady] = useState(false);
 
   const fitAllLines = useCallback(() => {
-    const wrap = copyWrapRef.current;
-    // Temporarily reveal text phases so scrollWidth measures correctly
+    const stageW =
+      stageRef.current?.clientWidth ||
+      copyWrapRef.current?.clientWidth ||
+      window.innerWidth;
+    const avail = Math.max(8, stageW - FIT_PAD_PX * 2);
+
+    // Reveal text phases + disable overflow clipping while measuring
     const phases = [phase1Ref.current, phase2Ref.current];
     const prev = phases.map((p) =>
       p
         ? {
             opacity: p.style.opacity,
             visibility: p.style.visibility,
+            overflow: p.style.overflow,
+            pointerEvents: p.style.pointerEvents,
           }
         : null,
     );
@@ -95,16 +117,21 @@ export function HeroScroll() {
       if (!p) continue;
       p.style.opacity = "1";
       p.style.visibility = "visible";
+      p.style.overflow = "visible";
+      p.style.pointerEvents = "none";
     }
-    // Push type as large as the viewport allows (single line); CTA stays standard size
-    fitSingleLine(line1Ref.current, wrap, 128, 16);
-    fitSingleLine(line2Ref.current, wrap, 110, 14);
+
+    fitSingleLine(line1Ref.current, avail);
+    fitSingleLine(line2Ref.current, avail);
+
     for (let i = 0; i < phases.length; i++) {
       const p = phases[i];
       const s = prev[i];
       if (!p || !s) continue;
       p.style.opacity = s.opacity;
       p.style.visibility = s.visibility;
+      p.style.overflow = s.overflow;
+      p.style.pointerEvents = s.pointerEvents;
     }
   }, []);
 
@@ -292,21 +319,37 @@ export function HeroScroll() {
 
   useEffect(() => {
     if (!firstReady) return;
+    let cancelled = false;
     const run = () => {
+      if (cancelled) return;
       fitAllLines();
       // Restore phase opacities after measure reveal
       const p = smoothProgressRef.current;
       applyPhaseOpacities(1 + p * (FRAME_COUNT - 1));
     };
-    run();
-    const wrap = copyWrapRef.current;
+
+    const afterFonts = () => {
+      if (cancelled) return;
+      run();
+      // Second pass after layout/paint settles
+      requestAnimationFrame(() => requestAnimationFrame(run));
+    };
+
+    if (typeof document !== "undefined" && document.fonts?.ready) {
+      document.fonts.ready.then(afterFonts).catch(afterFonts);
+    } else {
+      afterFonts();
+    }
+
+    const stage = stageRef.current;
     const ro =
-      typeof ResizeObserver !== "undefined" && wrap
+      typeof ResizeObserver !== "undefined" && stage
         ? new ResizeObserver(() => run())
         : null;
-    if (wrap && ro) ro.observe(wrap);
+    if (stage && ro) ro.observe(stage);
     window.addEventListener("resize", run, { passive: true });
     return () => {
+      cancelled = true;
       ro?.disconnect();
       window.removeEventListener("resize", run);
     };
@@ -370,28 +413,29 @@ export function HeroScroll() {
         />
 
         <div
-          className="absolute inset-0 z-[2] flex items-center justify-center px-3 sm:px-5 md:px-8"
+          className="absolute inset-0 z-[2] flex items-center justify-center"
+          style={{ paddingInline: FIT_PAD_PX }}
           dir="rtl"
         >
           <div
             ref={copyWrapRef}
             className={
               firstReady
-                ? "w-full max-w-[min(96vw,90rem)] text-center animate-hero-copy-in"
-                : "w-full max-w-[min(96vw,90rem)] text-center opacity-0"
+                ? "w-full text-center animate-hero-copy-in"
+                : "w-full text-center opacity-0"
             }
           >
-            <div className="relative grid place-items-center">
+            <div className="relative grid w-full place-items-center">
               {/* Phase 1 — frames 1–22 */}
               <div
                 ref={phase1Ref}
-                className="col-start-1 row-start-1 w-full overflow-hidden"
+                className="col-start-1 row-start-1 flex w-full justify-center"
                 style={{ opacity: 1 }}
               >
                 <h1
                   ref={line1Ref}
-                  className="font-extrabold mx-auto whitespace-nowrap text-white"
-                  style={{ textShadow: textShadowStrong, fontSize: "64px" }}
+                  className="font-black whitespace-nowrap text-white"
+                  style={{ textShadow: textShadowStrong, fontSize: "32px" }}
                 >
                   شادجیل یعنی شادیِ جویدن
                 </h1>
@@ -400,29 +444,29 @@ export function HeroScroll() {
               {/* Phase 2 — frames 23–46 */}
               <div
                 ref={phase2Ref}
-                className="col-start-1 row-start-1 w-full overflow-hidden"
+                className="col-start-1 row-start-1 flex w-full justify-center"
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
                 <p
                   ref={line2Ref}
-                  className="font-extrabold mx-auto whitespace-nowrap text-white"
-                  style={{ textShadow: textShadowStrong, fontSize: "52px" }}
+                  className="font-black whitespace-nowrap text-white"
+                  style={{ textShadow: textShadowStrong, fontSize: "28px" }}
                 >
                   از آجیل تا خشکبار و سوغات؛ هر لقمه یه لبخند
                 </p>
               </div>
 
-              {/* Phase 3 — frames 47–70 — standard button size (not text-fit) */}
+              {/* Phase 3 — frames 47–70 — standard button chrome; heavy label */}
               <div
                 ref={phase3Ref}
-                className="col-start-1 row-start-1 flex w-full items-center justify-center overflow-hidden"
+                className="col-start-1 row-start-1 flex w-full items-center justify-center"
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
                 <Link
                   href="/products"
-                  className="font-extrabold inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border border-white bg-[#AA6031] px-5 text-sm text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:h-12 sm:px-6 sm:text-base"
+                  className="font-black inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border border-white bg-[#AA6031] px-5 text-sm text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:h-12 sm:px-6 sm:text-base"
                 >
                   یه مشت شادی بردار
                 </Link>
