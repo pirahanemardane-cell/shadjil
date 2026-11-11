@@ -17,6 +17,7 @@ export async function loadProductsPage(input: {
   pageSize?: number;
   categorySlug?: string;
   brandSlug?: string;
+  tagSlug?: string;
   q?: string;
   sort?: "newest" | "price_asc" | "price_desc" | "popular";
   featured?: boolean;
@@ -34,6 +35,7 @@ export async function loadProductsPage(input: {
     pageSize,
     categorySlug: input.categorySlug,
     brandSlug: input.brandSlug,
+    tagSlug: input.tagSlug,
     q: input.q,
     sort: input.sort ?? "newest",
     featured: input.featured,

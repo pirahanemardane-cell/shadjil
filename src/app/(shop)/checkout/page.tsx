@@ -64,6 +64,8 @@ function mapCheckoutError(code: string | undefined): string {
   const map: Record<string, string> = {
     login_required: "برای ثبت سفارش وارد شوید.",
     empty_cart: "سبد خرید خالی است.",
+    discount_login_required:
+      "این کد تخفیف فقط برای کاربران واردشده است. وارد شوید یا بدون کد ادامه دهید.",
     discount_invalid: "کد تخفیف نامعتبر است.",
     discount_not_found: "کد تخفیف یافت نشد.",
     discount_inactive: "این کد تخفیف غیرفعال است.",
@@ -121,6 +123,7 @@ export default function CheckoutPage() {
     firstName: "",
     lastName: "",
     phone: "",
+    email: "",
     address: "",
     province: "",
     city: "",
@@ -141,6 +144,8 @@ export default function CheckoutPage() {
       is_default: boolean;
     }[]
   >([]);
+  /** مهمان = بدون آدرس ذخیره‌شده (لاگین نشده یا اولین خرید) */
+  const isGuestCheckout = savedAddresses.length === 0;
 
   // بارگذاری روش‌های فعال از دیتابیس (با فیلتر منطقه)
   useEffect(() => {
@@ -523,6 +528,7 @@ export default function CheckoutPage() {
       city: form.city.trim() || undefined,
       province: form.province.trim() || undefined,
       postal: normalizeIranPostalCode(form.postal.trim()) || form.postal.trim(),
+      email: form.email.trim() || undefined,
       note:
         [
           form.note.trim(),
@@ -738,6 +744,19 @@ export default function CheckoutPage() {
                 <p className="text-muted-foreground text-xs">
                   خرید بدون ثبت‌نام ممکن است. شماره موبایل برای هماهنگی ارسال الزامی است.
                 </p>
+                {isGuestCheckout ? (
+                  <p className="border-border bg-muted/40 rounded-xl border px-3 py-2 text-xs leading-6">
+                    مهمان هستید — سفارش با کد پیگیری قابل پیگیری است. برای ذخیره آدرس و
+                    تاریخچه در حساب،{" "}
+                    <Link
+                      href="/ورود?next=/checkout"
+                      className="text-primary font-medium underline-offset-2 hover:underline"
+                    >
+                      وارد شوید
+                    </Link>
+                    .
+                  </p>
+                ) : null}
 
                 {savedAddresses.length > 0 ? (
                   <div className="grid grid-cols-2 gap-2">
@@ -865,6 +884,22 @@ export default function CheckoutPage() {
                       />
                     </label>
                   ))}
+                  {isGuestCheckout ? (
+                    <label className="block space-y-1 text-sm sm:col-span-2">
+                      <span>ایمیل (اختیاری)</span>
+                      <input
+                        type="email"
+                        value={form.email}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, email: e.target.value }))
+                        }
+                        className="border-input bg-background h-10 w-full rounded-xl border px-3"
+                        dir="ltr"
+                        autoComplete="email"
+                        placeholder="برای دریافت رسید سفارش"
+                      />
+                    </label>
+                  ) : null}
                   <label className="block space-y-1 text-sm sm:col-span-2">
                     <span>استان *</span>
                     <select
@@ -1186,6 +1221,13 @@ export default function CheckoutPage() {
                   </div>
                 ) : null}
 
+                {doneOrder && isGuestCheckout && payStatus !== "failed" ? (
+                  <p className="text-muted-foreground text-xs leading-6">
+                    کد پیگیری را نگه دارید. بدون ورود به حساب هم از صفحه پیگیری سفارش
+                    قابل مشاهده است. برای تاریخچه دائمی، بعداً ثبت‌نام کنید.
+                  </p>
+                ) : null}
+
                 <div className="flex flex-col gap-2 sm:flex-row">
                   {payStatus === "failed" ? (
                     <button
@@ -1201,7 +1243,13 @@ export default function CheckoutPage() {
                     </button>
                   ) : (
                     <Link
-                      href="/dashboard?tab=orders"
+                      href={
+                        doneOrder
+                          ? `/track?code=${encodeURIComponent(doneOrder.id)}`
+                          : isGuestCheckout
+                            ? "/track"
+                            : "/dashboard?tab=orders"
+                      }
                       className="bg-primary text-primary-foreground flex h-11 flex-1 items-center justify-center rounded-xl text-sm font-medium"
                     >
                       پیگیری سفارش
