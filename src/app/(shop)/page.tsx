@@ -10,7 +10,6 @@ import { ProductService } from "@/services/product.service";
 import { CategoryService } from "@/services/category.service";
 import { BrandService } from "@/services/brand.service";
 import { getFlashSaleEndsAtAction } from "@/app/admin/actions/flash-sale";
-import { LivingNutsHero } from "@/components/home/living-nuts-hero";
 import type { ProductWithRelations } from "@/repositories/product.repository";
 
 // Below-fold client islands — SSR HTML kept; JS deferred from critical path.
@@ -162,8 +161,6 @@ export default async function HomePage() {
   ];
 
   return (
-    <>
-      <LivingNutsHero />
       <div className="mx-auto w-full max-w-none space-y-14 px-4 py-10 md:py-14">
           <section
             aria-label="اعتماد"
@@ -282,6 +279,5 @@ export default async function HomePage() {
             <OrderTrackBox />
           </section>
       </div>
-    </>
   );
 }
