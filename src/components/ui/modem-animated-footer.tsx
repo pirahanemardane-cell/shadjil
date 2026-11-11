@@ -23,7 +23,6 @@ interface FooterProps {
   navLinks?: FooterLink[];
   creatorName?: string;
   creatorUrl?: string;
-  brandIcon?: React.ReactNode;
   className?: string;
 }
 
@@ -35,7 +34,6 @@ export function Footer({
   navLinks = [],
   creatorName: _creatorName,
   creatorUrl: _creatorUrl,
-  brandIcon,
   className,
 }: FooterProps) {
   return (
@@ -45,10 +43,7 @@ export function Footer({
           <div className="mb-8 flex w-full flex-col sm:mb-10 md:mb-6">
             <div className="flex w-full flex-col items-center">
               <div className="flex flex-1 flex-col items-center space-y-2">
-                <div className="flex flex-col items-center gap-3">
-                  {brandIcon ? (
-                    <div className="flex items-center justify-center">{brandIcon}</div>
-                  ) : null}
+                <div className="flex items-center gap-2">
                   <span className="text-primary whitespace-nowrap text-4xl font-thin tracking-tight sm:text-5xl md:text-6xl">
                     {brandName}
                   </span>
@@ -105,18 +100,12 @@ export function Footer({
           {watermarkName}
         </div>
 
-        {/* Logo + side borders — خط‌ها حذف نشوند؛ نزدیک لوگو پروضعیت محصول، لبه محو */}
+        {/* Decorative side borders — no logo mark in footer */}
         <div
           dir="ltr"
           className="pointer-events-none absolute bottom-12 left-1/2 z-10 flex w-[min(100%,42rem)] -translate-x-1/2 items-center px-4 sm:bottom-14 md:bottom-20 md:w-[min(100%,56rem)] lg:w-[min(100%,64rem)]"
         >
-          <div className="bg-gradient-to-r from-transparent to-primary/70 h-px min-w-0 flex-1" />
-          <div
-            className="border-border/60 bg-background/70 pointer-events-auto relative mx-0 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border p-2 shadow-sm backdrop-blur-md transition-colors duration-300 hover:border-primary supports-[backdrop-filter]:bg-background/60 sm:h-20 sm:w-20 md:h-24 md:w-24"
-          >
-            {brandIcon}
-          </div>
-          <div className="bg-gradient-to-l from-transparent to-primary/70 h-px min-w-0 flex-1" />
+          <div className="bg-gradient-to-r from-transparent via-primary/70 to-transparent h-px min-w-0 flex-1" />
         </div>
         <div className="from-background via-background/80 to-background/40 absolute bottom-28 h-24 w-full bg-gradient-to-t blur-[1em]" />
       </footer>
