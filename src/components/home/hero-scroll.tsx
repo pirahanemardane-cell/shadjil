@@ -33,6 +33,30 @@ function phaseOpacities(frame1Based: number) {
   ] as const;
 }
 
+/** Grow font as large as possible while keeping a single unwrapped line. */
+function fitSingleLine(
+  el: HTMLElement | null,
+  container: HTMLElement | null,
+  maxPx: number,
+  minPx: number,
+) {
+  if (!el || !container) return;
+  const avail = Math.max(0, container.clientWidth - 2);
+  if (avail < 8) return;
+  el.style.whiteSpace = "nowrap";
+  let lo = minPx;
+  let hi = maxPx;
+  el.style.fontSize = `${hi}px`;
+  if (el.scrollWidth <= avail) return;
+  for (let i = 0; i < 14; i++) {
+    const mid = (lo + hi) / 2;
+    el.style.fontSize = `${mid}px`;
+    if (el.scrollWidth <= avail) lo = mid;
+    else hi = mid;
+  }
+  el.style.fontSize = `${lo}px`;
+}
+
 /**
  * Full-bleed scroll-scrub hero with phased RTL copy that crossfades by frame range.
  */
@@ -40,9 +64,13 @@ export function HeroScroll() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const copyWrapRef = useRef<HTMLDivElement>(null);
   const phase1Ref = useRef<HTMLDivElement>(null);
   const phase2Ref = useRef<HTMLDivElement>(null);
   const phase3Ref = useRef<HTMLDivElement>(null);
+  const line1Ref = useRef<HTMLHeadingElement>(null);
+  const line2Ref = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLAnchorElement>(null);
   const imagesRef = useRef<(HTMLImageElement | null)[]>(
     new Array(FRAME_COUNT).fill(null),
   );
@@ -51,6 +79,35 @@ export function HeroScroll() {
   const pendingProgressRef = useRef(0);
   const smoothProgressRef = useRef(0);
   const [firstReady, setFirstReady] = useState(false);
+
+  const fitAllLines = useCallback(() => {
+    const wrap = copyWrapRef.current;
+    // Temporarily reveal hidden phases so scrollWidth measures correctly
+    const phases = [phase1Ref.current, phase2Ref.current, phase3Ref.current];
+    const prev = phases.map((p) =>
+      p
+        ? {
+            opacity: p.style.opacity,
+            visibility: p.style.visibility,
+          }
+        : null,
+    );
+    for (const p of phases) {
+      if (!p) continue;
+      p.style.opacity = "1";
+      p.style.visibility = "visible";
+    }
+    fitSingleLine(line1Ref.current, wrap, 72, 14);
+    fitSingleLine(line2Ref.current, wrap, 56, 12);
+    fitSingleLine(ctaRef.current, wrap, 40, 14);
+    for (let i = 0; i < phases.length; i++) {
+      const p = phases[i];
+      const s = prev[i];
+      if (!p || !s) continue;
+      p.style.opacity = s.opacity;
+      p.style.visibility = s.visibility;
+    }
+  }, []);
 
   const applyPhaseOpacities = useCallback((frame1Based: number) => {
     const opacities = phaseOpacities(frame1Based);
@@ -234,10 +291,30 @@ export function HeroScroll() {
     };
   }, [applyPhaseOpacities, drawIndex, firstReady]);
 
+  useEffect(() => {
+    if (!firstReady) return;
+    const run = () => {
+      fitAllLines();
+      // Restore phase opacities after measure reveal
+      const p = smoothProgressRef.current;
+      applyPhaseOpacities(1 + p * (FRAME_COUNT - 1));
+    };
+    run();
+    const wrap = copyWrapRef.current;
+    const ro =
+      typeof ResizeObserver !== "undefined" && wrap
+        ? new ResizeObserver(() => run())
+        : null;
+    if (wrap && ro) ro.observe(wrap);
+    window.addEventListener("resize", run, { passive: true });
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", run);
+    };
+  }, [applyPhaseOpacities, firstReady, fitAllLines]);
+
   const textShadowStrong =
     "0 2px 24px rgba(0,0,0,0.72), 0 0 2px rgba(0,0,0,0.85), 0 4px 40px rgba(0,0,0,0.45)";
-  const textShadowSoft =
-    "0 2px 18px rgba(0,0,0,0.65), 0 0 2px rgba(0,0,0,0.75), 0 3px 28px rgba(0,0,0,0.4)";
 
   return (
     <section
@@ -294,26 +371,28 @@ export function HeroScroll() {
         />
 
         <div
-          className="absolute inset-0 z-[2] flex items-center justify-center px-5 sm:px-10"
+          className="absolute inset-0 z-[2] flex items-center justify-center px-4 sm:px-8 md:px-12"
           dir="rtl"
         >
           <div
+            ref={copyWrapRef}
             className={
               firstReady
-                ? "w-full max-w-2xl text-center animate-hero-copy-in"
-                : "w-full max-w-2xl text-center opacity-0"
+                ? "w-full max-w-[min(92vw,68rem)] text-center animate-hero-copy-in"
+                : "w-full max-w-[min(92vw,68rem)] text-center opacity-0"
             }
           >
             <div className="relative grid place-items-center">
               {/* Phase 1 — frames 1–22 */}
               <div
                 ref={phase1Ref}
-                className="col-start-1 row-start-1 w-full"
+                className="col-start-1 row-start-1 w-full overflow-hidden"
                 style={{ opacity: 1 }}
               >
                 <h1
-                  className="font-extrabold mx-auto max-w-[14ch] text-[1.85rem] leading-[1.28] text-white sm:max-w-[16ch] sm:text-4xl sm:leading-[1.25] md:text-5xl md:leading-[1.22]"
-                  style={{ textShadow: textShadowStrong }}
+                  ref={line1Ref}
+                  className="font-extrabold mx-auto whitespace-nowrap text-white"
+                  style={{ textShadow: textShadowStrong, fontSize: "48px" }}
                 >
                   شادجیل یعنی شادیِ جویدن
                 </h1>
@@ -322,13 +401,14 @@ export function HeroScroll() {
               {/* Phase 2 — frames 23–46 */}
               <div
                 ref={phase2Ref}
-                className="col-start-1 row-start-1 w-full"
+                className="col-start-1 row-start-1 w-full overflow-hidden"
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
                 <p
-                  className="font-medium mx-auto max-w-[28ch] text-base leading-7 text-white sm:text-lg sm:leading-8 md:text-xl md:leading-9"
-                  style={{ textShadow: textShadowSoft }}
+                  ref={line2Ref}
+                  className="font-extrabold mx-auto whitespace-nowrap text-white"
+                  style={{ textShadow: textShadowStrong, fontSize: "36px" }}
                 >
                   از آجیل تا خشکبار و سوغات؛ هر لقمه یه لبخند
                 </p>
@@ -337,13 +417,15 @@ export function HeroScroll() {
               {/* Phase 3 — frames 47–70 */}
               <div
                 ref={phase3Ref}
-                className="col-start-1 row-start-1 flex w-full items-center justify-center"
+                className="col-start-1 row-start-1 flex w-full items-center justify-center overflow-hidden"
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
                 <Link
+                  ref={ctaRef}
                   href="/products"
-                  className="font-regular inline-flex items-center justify-center rounded-xl bg-[#AA6031] px-6 py-3 text-sm text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:px-7 sm:py-3.5 sm:text-base"
+                  className="font-extrabold inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-xl border border-white bg-[#AA6031] px-5 py-2.5 text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:px-7 sm:py-3"
+                  style={{ fontSize: "28px" }}
                 >
                   یه مشت شادی بردار
                 </Link>
