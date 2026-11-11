@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const FRAME_COUNT = 70;
@@ -85,6 +86,7 @@ export function HeroScroll() {
   const phase3Ref = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLHeadingElement>(null);
   const line2Ref = useRef<HTMLParagraphElement>(null);
+  const scrollCueRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<(HTMLImageElement | null)[]>(
     new Array(FRAME_COUNT).fill(null),
   );
@@ -93,6 +95,15 @@ export function HeroScroll() {
   const pendingProgressRef = useRef(0);
   const smoothProgressRef = useRef(0);
   const [firstReady, setFirstReady] = useState(false);
+
+  const applyScrollCue = useCallback((progress: number) => {
+    const el = scrollCueRef.current;
+    if (!el) return;
+    // Visible early; fade out through ~first 20% of scrub
+    const o = Math.max(0, Math.min(1, 1 - progress / 0.2));
+    el.style.opacity = String(o);
+    el.style.visibility = o < 0.04 ? "hidden" : "visible";
+  }, []);
 
   const fitAllLines = useCallback(() => {
     const stageW =
@@ -279,6 +290,7 @@ export function HeroScroll() {
       const frame1 = 1 + p * (FRAME_COUNT - 1);
       drawIndex(idx);
       applyPhaseOpacities(frame1);
+      applyScrollCue(p);
     };
 
     const measure = () => {
@@ -315,7 +327,7 @@ export function HeroScroll() {
       ro?.disconnect();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [applyPhaseOpacities, drawIndex, firstReady]);
+  }, [applyPhaseOpacities, applyScrollCue, drawIndex, firstReady]);
 
   useEffect(() => {
     if (!firstReady) return;
@@ -472,6 +484,21 @@ export function HeroScroll() {
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Scroll cue — bottom-center chevron, fades as scrub progresses */}
+        <div
+          ref={scrollCueRef}
+          className="pointer-events-none absolute inset-x-0 bottom-5 z-[3] flex justify-center sm:bottom-7"
+          style={{ opacity: firstReady ? 1 : 0 }}
+          aria-hidden
+        >
+          <div
+            className="hero-scroll-cue-bounce flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/80 bg-black/40 text-white shadow-[0_6px_20px_rgba(0,0,0,0.4)]"
+            role="presentation"
+          >
+            <ChevronDown className="size-5" strokeWidth={2.75} aria-hidden />
           </div>
         </div>
       </div>
