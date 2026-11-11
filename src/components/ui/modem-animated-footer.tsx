@@ -40,7 +40,8 @@ export function Footer({
   className,
 }: FooterProps) {
   return (
-    <section className={cn("relative mt-0 w-full overflow-hidden", className)}>
+    // overflow-x only — full overflow:hidden breaks backdrop-filter on the glass mark
+    <section className={cn("relative mt-0 w-full overflow-x-hidden", className)}>
       <footer className="border-t bg-background relative mt-20">
         <div className="relative mx-auto flex min-h-[26rem] w-full max-w-7xl flex-col justify-between p-4 py-8 sm:min-h-[28rem] md:min-h-[30rem] md:py-10">
           <div className="mb-8 flex w-full flex-col sm:mb-10 md:mb-6">
@@ -92,12 +93,12 @@ export function Footer({
           </div>
         </div>
 
-        {/* Soft fade above chrome — keep below watermark so glass can see “Shadjil” */}
+        {/* Soft fade above chrome — below watermark so glass can sample “Shadjil” */}
         <div className="from-background via-background/80 to-background/40 pointer-events-none absolute bottom-28 z-0 h-24 w-full bg-gradient-to-t blur-[1em]" />
 
-        {/* Large background text */}
+        {/* Large background text — sibling behind the glass (no transform ancestor on glass) */}
         <div
-          className="text-primary/35 pointer-events-none absolute bottom-8 left-1/2 z-[1] max-w-[95vw] -translate-x-1/2 overflow-hidden whitespace-nowrap px-4 text-center leading-none font-extrabold select-none sm:bottom-8 md:bottom-0"
+          className="text-primary/40 pointer-events-none absolute inset-x-0 bottom-8 z-[1] overflow-x-hidden px-4 text-center leading-none font-extrabold whitespace-nowrap select-none sm:bottom-8 md:bottom-0"
           style={{
             fontSize: "clamp(1.35rem, 9vw, 9.5rem)",
             letterSpacing: "-0.02em",
@@ -106,18 +107,39 @@ export function Footer({
           {watermarkName}
         </div>
 
-        {/* Lower logo + side borders — خط‌ها حذف نشوند؛ نزدیک لوگو پروضعیت محصول، لبه محو */}
+        {/*
+          Lower logo + side borders.
+          Center with inset-x + flex (not -translate-x) so backdrop-filter is not trapped
+          in a transform containing block and can blur the watermark behind the glass.
+        */}
         <div
           dir="ltr"
-          className="pointer-events-none absolute bottom-12 left-1/2 z-10 flex w-[min(100%,42rem)] max-w-full -translate-x-1/2 items-center px-4 sm:bottom-14 md:bottom-20 md:w-[min(100%,56rem)] lg:w-[min(100%,64rem)]"
+          className="pointer-events-none absolute inset-x-0 bottom-12 z-10 flex justify-center px-4 sm:bottom-14 md:bottom-20"
         >
-          <div className="bg-gradient-to-r from-transparent to-primary/70 h-px min-w-0 flex-1" />
-          <div
-            className="border-border/50 bg-background/40 pointer-events-auto relative mx-0 flex h-14 w-14 max-h-14 max-w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border p-1.5 shadow-sm backdrop-blur-xl backdrop-saturate-150 transition-colors duration-300 hover:border-primary supports-[backdrop-filter]:bg-background/25 sm:h-20 sm:w-20 sm:max-h-20 sm:max-w-20 sm:p-2 md:h-24 md:w-24 md:max-h-24 md:max-w-24"
-          >
-            {brandIcon}
+          <div className="flex w-full max-w-[42rem] items-center md:max-w-[56rem] lg:max-w-[64rem]">
+            <div className="bg-gradient-to-r from-transparent to-primary/70 h-px min-w-0 flex-1" />
+            <div
+              className={cn(
+                "pointer-events-auto relative mx-0 flex size-16 shrink-0 items-center justify-center rounded-2xl border sm:size-20 md:size-24",
+                "border-white/50 dark:border-white/20",
+                "bg-white/35 dark:bg-white/10",
+                "shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
+                "backdrop-blur-lg backdrop-saturate-150",
+                "supports-[backdrop-filter]:bg-white/25 dark:supports-[backdrop-filter]:bg-white/10",
+                "transition-colors duration-300 hover:border-primary/60",
+              )}
+              style={{
+                WebkitBackdropFilter: "blur(16px) saturate(1.5)",
+                backdropFilter: "blur(16px) saturate(1.5)",
+              }}
+            >
+              {/* Clip the mark inside the glass without putting overflow on the blur element */}
+              <div className="flex size-full items-center justify-center overflow-hidden rounded-[inherit] p-1.5 sm:p-2">
+                {brandIcon}
+              </div>
+            </div>
+            <div className="bg-gradient-to-l from-transparent to-primary/70 h-px min-w-0 flex-1" />
           </div>
-          <div className="bg-gradient-to-l from-transparent to-primary/70 h-px min-w-0 flex-1" />
         </div>
       </footer>
     </section>
