@@ -121,12 +121,12 @@ export function Footer({
             <div
               className={cn(
                 "pointer-events-auto relative mx-0 flex size-16 shrink-0 items-center justify-center rounded-2xl border sm:size-20 md:size-24",
-                "border-white/50 dark:border-white/20",
-                "bg-white/35 dark:bg-white/10",
+                "border-white/40 dark:border-white/15",
+                "bg-white/15 dark:bg-white/10",
                 "shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
-                "backdrop-blur-lg backdrop-saturate-150",
-                "supports-[backdrop-filter]:bg-white/25 dark:supports-[backdrop-filter]:bg-white/10",
-                "transition-colors duration-300 hover:border-primary/60",
+                "backdrop-blur-lg",
+                "supports-[backdrop-filter]:bg-white/10 dark:supports-[backdrop-filter]:bg-white/5",
+                "transition-colors duration-300 hover:border-white/60",
               )}
               style={{
                 WebkitBackdropFilter: "blur(16px) saturate(1.5)",
