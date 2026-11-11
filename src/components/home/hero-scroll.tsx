@@ -70,7 +70,6 @@ export function HeroScroll() {
   const phase3Ref = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLHeadingElement>(null);
   const line2Ref = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLAnchorElement>(null);
   const imagesRef = useRef<(HTMLImageElement | null)[]>(
     new Array(FRAME_COUNT).fill(null),
   );
@@ -82,8 +81,8 @@ export function HeroScroll() {
 
   const fitAllLines = useCallback(() => {
     const wrap = copyWrapRef.current;
-    // Temporarily reveal hidden phases so scrollWidth measures correctly
-    const phases = [phase1Ref.current, phase2Ref.current, phase3Ref.current];
+    // Temporarily reveal text phases so scrollWidth measures correctly
+    const phases = [phase1Ref.current, phase2Ref.current];
     const prev = phases.map((p) =>
       p
         ? {
@@ -97,9 +96,9 @@ export function HeroScroll() {
       p.style.opacity = "1";
       p.style.visibility = "visible";
     }
-    fitSingleLine(line1Ref.current, wrap, 72, 14);
-    fitSingleLine(line2Ref.current, wrap, 56, 12);
-    fitSingleLine(ctaRef.current, wrap, 40, 14);
+    // Push type as large as the viewport allows (single line); CTA stays standard size
+    fitSingleLine(line1Ref.current, wrap, 128, 16);
+    fitSingleLine(line2Ref.current, wrap, 110, 14);
     for (let i = 0; i < phases.length; i++) {
       const p = phases[i];
       const s = prev[i];
@@ -371,15 +370,15 @@ export function HeroScroll() {
         />
 
         <div
-          className="absolute inset-0 z-[2] flex items-center justify-center px-4 sm:px-8 md:px-12"
+          className="absolute inset-0 z-[2] flex items-center justify-center px-3 sm:px-5 md:px-8"
           dir="rtl"
         >
           <div
             ref={copyWrapRef}
             className={
               firstReady
-                ? "w-full max-w-[min(92vw,68rem)] text-center animate-hero-copy-in"
-                : "w-full max-w-[min(92vw,68rem)] text-center opacity-0"
+                ? "w-full max-w-[min(96vw,90rem)] text-center animate-hero-copy-in"
+                : "w-full max-w-[min(96vw,90rem)] text-center opacity-0"
             }
           >
             <div className="relative grid place-items-center">
@@ -392,7 +391,7 @@ export function HeroScroll() {
                 <h1
                   ref={line1Ref}
                   className="font-extrabold mx-auto whitespace-nowrap text-white"
-                  style={{ textShadow: textShadowStrong, fontSize: "48px" }}
+                  style={{ textShadow: textShadowStrong, fontSize: "64px" }}
                 >
                   شادجیل یعنی شادیِ جویدن
                 </h1>
@@ -408,13 +407,13 @@ export function HeroScroll() {
                 <p
                   ref={line2Ref}
                   className="font-extrabold mx-auto whitespace-nowrap text-white"
-                  style={{ textShadow: textShadowStrong, fontSize: "36px" }}
+                  style={{ textShadow: textShadowStrong, fontSize: "52px" }}
                 >
                   از آجیل تا خشکبار و سوغات؛ هر لقمه یه لبخند
                 </p>
               </div>
 
-              {/* Phase 3 — frames 47–70 */}
+              {/* Phase 3 — frames 47–70 — standard button size (not text-fit) */}
               <div
                 ref={phase3Ref}
                 className="col-start-1 row-start-1 flex w-full items-center justify-center overflow-hidden"
@@ -422,10 +421,8 @@ export function HeroScroll() {
                 aria-hidden
               >
                 <Link
-                  ref={ctaRef}
                   href="/products"
-                  className="font-extrabold inline-flex max-w-full items-center justify-center whitespace-nowrap rounded-xl border border-white bg-[#AA6031] px-5 py-2.5 text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:px-7 sm:py-3"
-                  style={{ fontSize: "28px" }}
+                  className="font-extrabold inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border border-white bg-[#AA6031] px-5 text-sm text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:h-12 sm:px-6 sm:text-base"
                 >
                   یه مشت شادی بردار
                 </Link>
