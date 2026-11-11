@@ -56,7 +56,7 @@ h4, .h4 {
 
 :root {
   --secondary-foreground: #F8F9FA;
-  --secondary: #023047;
+  --secondary: #AA6031;
   --foreground: #212529;
   --primary-foreground: #F8F9FA;
   --surface-primary: #F8F9FA;
@@ -181,9 +181,9 @@ h4, .h4 {
   --card-foreground: #023047;
   --popover: #FFFFFF;
   --popover-foreground: #023047;
-  --primary: #023047;
+  --primary: #AA6031;
   --primary-foreground: #F8F9FA;
-  --secondary: #023047;
+  --secondary: #AA6031;
   --secondary-foreground: #F8F9FA;
   --muted: #DEE2E6;
   --muted-foreground: #495057;
@@ -192,21 +192,21 @@ h4, .h4 {
   --destructive: #DC2626;
   --border: #023047;
   --input: #DEE2E6;
-  --ring: #023047;
-  --chart-1: #023047;
-  --chart-2: #13ABC4;
+  --ring: #AA6031;
+  --chart-1: #AA6031;
+  --chart-2: #99B012;
   --chart-3: #495057;
   --chart-4: #DEE2E6;
   --chart-5: #212529;
   --radius: 0.625rem;
   --sidebar: #FFFFFF;
   --sidebar-foreground: #023047;
-  --sidebar-primary: #023047;
+  --sidebar-primary: #AA6031;
   --sidebar-primary-foreground: #F8F9FA;
   --sidebar-accent: #DEE2E6;
   --sidebar-accent-foreground: #023047;
   --sidebar-border: #DEE2E6;
-  --sidebar-ring: #023047;
+  --sidebar-ring: #AA6031;
 }
 
 .dark {
@@ -218,31 +218,31 @@ h4, .h4 {
   --card-foreground: #F8F9FA;
   --popover: #2A2E32;
   --popover-foreground: #F8F9FA;
-  --primary: #13ABC4;
+  --primary: #99B012;
   --primary-foreground: #212529;
-  --secondary: #13ABC4;
+  --secondary: #99B012;
   --secondary-foreground: #212529;
   --muted: #495057;
   --muted-foreground: #DEE2E6;
   --accent: #495057;
   --accent-foreground: #F8F9FA;
   --destructive: #EF4444;
-  --border: #13ABC4;
+  --border: #99B012;
   --input: #495057;
-  --ring: #13ABC4;
-  --chart-1: #13ABC4;
+  --ring: #99B012;
+  --chart-1: #99B012;
   --chart-2: #DEE2E6;
   --chart-3: #495057;
   --chart-4: #F8F9FA;
-  --chart-5: #023047;
+  --chart-5: #AA6031;
   --sidebar: #2A2E32;
   --sidebar-foreground: #F8F9FA;
-  --sidebar-primary: #13ABC4;
+  --sidebar-primary: #99B012;
   --sidebar-primary-foreground: #212529;
   --sidebar-accent: #495057;
   --sidebar-accent-foreground: #F8F9FA;
   --sidebar-border: #495057;
-  --sidebar-ring: #13ABC4;
+  --sidebar-ring: #99B012;
 }
 
 @layer base {
@@ -373,9 +373,9 @@ h4, .h4 { font-weight: 600 !important; }
   --card-foreground: #212529;
   --popover: #FFFFFF;
   --popover-foreground: #212529;
-  --primary: #023047;
+  --primary: #AA6031;
   --primary-foreground: #FFFFFF;
-  --secondary: #023047;
+  --secondary: #AA6031;
   --secondary-foreground: #F8F9FA;
   --muted: #E9ECEF;
   --muted-foreground: #495057;
@@ -385,7 +385,7 @@ h4, .h4 { font-weight: 600 !important; }
   --destructive-foreground: #FFFFFF;
   --border: #DEE2E6;
   --input: #DEE2E6;
-  --ring: #023047;
+  --ring: #AA6031;
   --radius: 0.75rem;
 }
 
@@ -396,19 +396,19 @@ h4, .h4 { font-weight: 600 !important; }
   --card-foreground: #EBFFFB;
   --popover: #2A2E32;
   --popover-foreground: #EBFFFB;
-  --primary: #13ABC4;
+  --primary: #99B012;
   --primary-foreground: #212529;
-  --secondary: #13ABC4;
+  --secondary: #99B012;
   --secondary-foreground: #212529;
   --muted: #343A40;
   --muted-foreground: #ADB5BD;
-  --accent: #004F58;
+  --accent: #3A4508;
   --accent-foreground: #EBFFFB;
   --destructive: #F2B8B5;
   --destructive-foreground: #601410;
   --border: #495057;
   --input: #495057;
-  --ring: #13ABC4;
+  --ring: #99B012;
 }
 
 /* === PM-OVERFLOW-GUARD (auto) === */
@@ -569,11 +569,11 @@ img, video, canvas, svg {
 
 /* Site loader — brand colors only */
 :root {
-  --pm-loader-bg: #023047;
+  --pm-loader-bg: #AA6031;
   --pm-loader-spin: #F8F9FA;
 }
 .dark {
-  --pm-loader-bg: #13ABC4;
+  --pm-loader-bg: #99B012;
   --pm-loader-spin: #212529;
 }
 .pm-site-loader {
@@ -586,7 +586,7 @@ img, video, canvas, svg {
   outline: none;
 }
 :focus-visible {
-  outline: 2px solid var(--sidebar-ring, #13ABC4);
+  outline: 2px solid var(--sidebar-ring, #99B012);
   outline-offset: 2px;
 }
 a:focus-visible,
@@ -596,7 +596,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--sidebar-ring, #13ABC4);
+  outline: 2px solid var(--sidebar-ring, #99B012);
   outline-offset: 2px;
 }
 /* هدر چسبان فوکوس را نپوشاند */
