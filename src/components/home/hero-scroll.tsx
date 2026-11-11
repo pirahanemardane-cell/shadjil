@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const FRAME_COUNT = 70;
 /** Tall scrub runway — denser frames = smoother scrub feel */
-const SCROLL_VH = 360;
+const SCROLL_VH = 380;
+/** Eager-load this many frames right after frame 0 for early scrub */
+const EAGER_COUNT = 16;
 
 function frameSrc(i: number) {
   return `/hero/frames/frame-${String(i).padStart(3, "0")}.webp`;
@@ -23,6 +25,7 @@ export function HeroScroll() {
   const lastIdxRef = useRef(-1);
   const rafRef = useRef(0);
   const pendingProgressRef = useRef(0);
+  const smoothProgressRef = useRef(0);
   const [firstReady, setFirstReady] = useState(false);
 
   const drawIndex = useCallback((idx: number, force = false) => {
@@ -31,7 +34,7 @@ export function HeroScroll() {
     const canvas = canvasRef.current;
     const stage = stageRef.current;
     if (!canvas || !stage) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
+    const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
     if (!ctx) return;
 
     let img = imagesRef.current[idx];
@@ -106,14 +109,21 @@ export function HeroScroll() {
 
     (async () => {
       await loadOne(0);
-      const CONCURRENCY = 6;
-      let next = 1;
+      // Burst-load early frames so the first scrub stretch stays crisp
+      const eagerEnd = Math.min(EAGER_COUNT, FRAME_COUNT);
+      await Promise.all(
+        Array.from({ length: eagerEnd - 1 }, (_, k) => loadOne(k + 1)),
+      );
+      if (cancelled) return;
+
+      const CONCURRENCY = 8;
+      let next = eagerEnd;
       const workers = Array.from({ length: CONCURRENCY }, async () => {
         while (!cancelled && next < FRAME_COUNT) {
           const i = next++;
           await new Promise<void>((r) => {
             if (typeof requestIdleCallback === "function") {
-              requestIdleCallback(() => r(), { timeout: 250 });
+              requestIdleCallback(() => r(), { timeout: 120 });
             } else {
               setTimeout(r, 0);
             }
@@ -133,16 +143,20 @@ export function HeroScroll() {
   useEffect(() => {
     if (!firstReady) return;
 
-    const applyProgress = (progress: number) => {
-      const eased = progress;
+    const applyProgress = (raw: number) => {
+      // Light EMA keeps scrub fluid without noticeable lag
+      const prev = smoothProgressRef.current;
+      const smoothed = prev + (raw - prev) * 0.55;
+      smoothProgressRef.current = Math.abs(raw - prev) < 0.002 ? raw : smoothed;
+      const p = smoothProgressRef.current;
       const idx = Math.min(
         FRAME_COUNT - 1,
-        Math.max(0, Math.round(eased * (FRAME_COUNT - 1))),
+        Math.max(0, Math.round(p * (FRAME_COUNT - 1))),
       );
       drawIndex(idx);
     };
 
-    const onScroll = () => {
+    const measure = () => {
       const el = sectionRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
@@ -156,12 +170,24 @@ export function HeroScroll() {
       });
     };
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    measure();
+    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
+
+    const stage = stageRef.current;
+    const ro =
+      typeof ResizeObserver !== "undefined" && stage
+        ? new ResizeObserver(() => {
+            lastIdxRef.current = -1;
+            measure();
+          })
+        : null;
+    if (stage && ro) ro.observe(stage);
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+      ro?.disconnect();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [drawIndex, firstReady]);
@@ -176,7 +202,6 @@ export function HeroScroll() {
         marginRight: "calc(50% - 50vw)",
       }}
       aria-label="هیرو"
-      aria-hidden={false}
     >
       <div
         ref={stageRef}
@@ -186,6 +211,7 @@ export function HeroScroll() {
           minHeight: "100vh",
           width: "100vw",
           backgroundColor: "#111",
+          contain: "strict",
         }}
       >
         {!firstReady ? (
@@ -202,7 +228,12 @@ export function HeroScroll() {
         <canvas
           ref={canvasRef}
           className="absolute inset-0 block h-full w-full"
-          style={{ width: "100%", height: "100%" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            willChange: "contents",
+            pointerEvents: "none",
+          }}
           aria-hidden
         />
       </div>
