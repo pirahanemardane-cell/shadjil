@@ -10,6 +10,7 @@ import { ProductService } from "@/services/product.service";
 import { CategoryService } from "@/services/category.service";
 import { BrandService } from "@/services/brand.service";
 import { getFlashSaleEndsAtAction } from "@/app/admin/actions/flash-sale";
+import { HeroScroll } from "@/components/home/hero-scroll";
 import type { ProductWithRelations } from "@/repositories/product.repository";
 
 // Below-fold client islands — SSR HTML kept; JS deferred from critical path.
@@ -161,6 +162,20 @@ export default async function HomePage() {
   ];
 
   return (
+    <>
+      <link
+        rel="preload"
+        as="image"
+        href="/hero/hero-poster.webp"
+        type="image/webp"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/hero/frames/frame-001.webp"
+        type="image/webp"
+      />
+      <HeroScroll />
       <div className="mx-auto w-full max-w-none space-y-14 px-4 py-10 md:py-14">
           <section
             aria-label="اعتماد"
@@ -279,5 +294,6 @@ export default async function HomePage() {
             <OrderTrackBox />
           </section>
       </div>
+    </>
   );
 }
