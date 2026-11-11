@@ -16,10 +16,10 @@ const sizes = {
   md: { width: 44, height: 44, className: "h-10 w-10 sm:h-11 sm:w-11" },
   lg: { width: 52, height: 52, className: "h-12 w-12" },
   footer: {
-    width: 80,
-    height: 80,
-    // Stay inside the frosted footer shape (padded box) on mobile/tablet/desktop
-    className: "h-10 w-10 max-h-full max-w-full sm:h-16 sm:w-16 md:h-20 md:w-20",
+    width: 96,
+    height: 96,
+    // Fill the padded frosted shape; object-contain keeps nuts + wordmark uncropped
+    className: "h-full w-full max-h-full max-w-full object-contain",
   },
 };
 
@@ -41,7 +41,13 @@ export function Logo({ className, priority, size = "md", link = true }: Props) {
 
   if (!link) {
     return (
-      <span className={cn("inline-flex shrink-0 items-center", className)}>
+      <span
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center",
+          size === "footer" && "h-full w-full",
+          className,
+        )}
+      >
         {image}
       </span>
     );
@@ -50,7 +56,11 @@ export function Logo({ className, priority, size = "md", link = true }: Props) {
   return (
     <Link
       href="/"
-      className={cn("inline-flex shrink-0 items-center", className)}
+      className={cn(
+        "inline-flex shrink-0 items-center justify-center",
+        size === "footer" && "h-full w-full",
+        className,
+      )}
       aria-label="شادجیل"
     >
       {image}
