@@ -466,7 +466,7 @@ export function HeroScroll() {
               >
                 <Link
                   href="/products"
-                  className="font-black inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border border-white bg-[#AA6031] px-5 text-sm text-white transition-colors hover:bg-[#AA6031]/90 dark:bg-[#99B012] dark:hover:bg-[#99B012]/90 sm:h-12 sm:px-6 sm:text-base"
+                  className="hero-cta-button animate-hero-cta-pulse font-black inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border-2 border-white bg-[#AA6031] px-5 text-sm text-white transition-colors hover:bg-[#964f28] dark:bg-[#99B012] dark:hover:bg-[#7f940e] sm:h-12 sm:px-6 sm:text-base"
                 >
                   یه مشت شادی بردار
                 </Link>
