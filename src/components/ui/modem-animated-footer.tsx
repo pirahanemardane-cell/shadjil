@@ -23,14 +23,15 @@ interface FooterProps {
   navLinks?: FooterLink[];
   creatorName?: string;
   creatorUrl?: string;
+  /** Lower footer chrome mark only — not shown above the title. */
   brandIcon?: React.ReactNode;
   className?: string;
 }
 
 export function Footer({
   brandName = "شادجیل",
-  watermarkName = "PirahanMardane",
-  brandDescription = "فروشگاه تخصصی شادجیل — رسمی، اسپرت، ،  و سوغات",
+  watermarkName = "Shadjil",
+  brandDescription = "فروشگاه تخصصی شادجیل — آجیل، خشکبار، خرما و سوغات",
   socialLinks = [],
   navLinks = [],
   creatorName: _creatorName,
@@ -46,7 +47,7 @@ export function Footer({
             <div className="flex w-full flex-col items-center">
               <div className="flex flex-1 flex-col items-center space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-primary whitespace-nowrap text-6xl font-thin tracking-tight">
+                  <span className="text-primary whitespace-nowrap text-4xl font-thin tracking-tight sm:text-5xl md:text-6xl">
                     {brandName}
                   </span>
                 </div>
@@ -102,7 +103,7 @@ export function Footer({
           {watermarkName}
         </div>
 
-        {/* Logo + side borders — خط‌ها حذف نشوند؛ نزدیک لوگو پروضعیت محصول، لبه محو */}
+        {/* Lower logo + side borders — خط‌ها حذف نشوند؛ نزدیک لوگو پروضعیت محصول، لبه محو */}
         <div
           dir="ltr"
           className="pointer-events-none absolute bottom-12 left-1/2 z-10 flex w-[min(100%,42rem)] -translate-x-1/2 items-center px-4 sm:bottom-14 md:bottom-20 md:w-[min(100%,56rem)] lg:w-[min(100%,64rem)]"

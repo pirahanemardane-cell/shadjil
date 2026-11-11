@@ -6,17 +6,45 @@ type Props = {
   className?: string;
   priority?: boolean;
   size?: "sm" | "md" | "lg" | "footer";
+  /** When false, render the image only (e.g. nested inside an existing link). */
+  link?: boolean;
 };
 
+/** Square illustrated mark — keep height within the nav bar, not crushing links. */
 const sizes = {
-  sm: { width: 100, height: 30, className: "h-7 w-auto max-h-7 max-w-[6.5rem]" },
-  md: { width: 140, height: 42, className: "h-8 w-auto max-h-8 max-w-[8rem]" },
-  lg: { width: 160, height: 48, className: "h-9 w-auto max-h-9 max-w-[9rem]" },
-  footer: { width: 220, height: 66, className: "h-12 w-auto max-h-12 max-w-[11rem] sm:h-14 sm:max-h-14 sm:max-w-[13rem]" },
+  sm: { width: 36, height: 36, className: "h-9 w-9" },
+  md: { width: 44, height: 44, className: "h-10 w-10 sm:h-11 sm:w-11" },
+  lg: { width: 52, height: 52, className: "h-12 w-12" },
+  footer: {
+    width: 80,
+    height: 80,
+    className: "h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20",
+  },
 };
 
-export function Logo({ className, priority, size = "md" }: Props) {
+const LOGO_SRC = "/brand/logo.webp";
+
+export function Logo({ className, priority, size = "md", link = true }: Props) {
   const s = sizes[size];
+
+  const image = (
+    <Image
+      src={LOGO_SRC}
+      alt="شادجیل"
+      width={s.width}
+      height={s.height}
+      className={cn(s.className, "object-contain")}
+      priority={priority}
+    />
+  );
+
+  if (!link) {
+    return (
+      <span className={cn("inline-flex shrink-0 items-center", className)}>
+        {image}
+      </span>
+    );
+  }
 
   return (
     <Link
@@ -24,22 +52,7 @@ export function Logo({ className, priority, size = "md" }: Props) {
       className={cn("inline-flex shrink-0 items-center", className)}
       aria-label="شادجیل"
     >
-      <Image
-        src="/brand/logo-light-transparent.webp"
-        alt="شادجیل"
-        width={s.width}
-        height={s.height}
-        className={cn(s.className, "dark:hidden")}
-        priority={priority}
-      />
-      <Image
-        src="/brand/logo-dark-transparent.webp"
-        alt="شادجیل"
-        width={s.width}
-        height={s.height}
-        className={cn(s.className, "hidden dark:block")}
-        priority={priority}
-      />
+      {image}
     </Link>
   );
 }

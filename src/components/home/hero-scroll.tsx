@@ -179,7 +179,7 @@ export function HeroScroll() {
           !introFiredRef.current
         ) {
           introFiredRef.current = true;
-          window.dispatchEvent(new Event("pm:hero-intro-done"));
+          window.dispatchEvent(new Event("shadjil:hero-intro-done"));
         }
       });
     };

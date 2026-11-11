@@ -3,7 +3,7 @@
 Version: 1.1 | 2026-10-20 | Status: pre-launch (noindex)
 
 ## Goal
-Specialized men's shirt store with Persian UX, real inventory, Iranian shipping, simple admin.
+Specialized nuts, dried fruit, dates, and souvenirs store (شادجیل) with Persian UX, real inventory, Iranian shipping, simple admin.
 
 ## Stack
 - Frontend: Next.js 15 (App Router) + TypeScript + Tailwind + shadcn/ui
