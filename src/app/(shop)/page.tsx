@@ -10,8 +10,6 @@ import { ProductService } from "@/services/product.service";
 import { CategoryService } from "@/services/category.service";
 import { BrandService } from "@/services/brand.service";
 import { getFlashSaleEndsAtAction } from "@/app/admin/actions/flash-sale";
-import { HeroScroll } from "@/components/home/hero-scroll";
-import { HomeAfterHero } from "@/components/home/home-after-hero";
 import type { ProductWithRelations } from "@/repositories/product.repository";
 
 // Below-fold client islands — SSR HTML kept; JS deferred from critical path.
@@ -40,7 +38,7 @@ const OrderTrackBox = dynamic(
   { ssr: true },
 );
 
-// ISR: HTML کش‌شده ۶۰ ثانیه — هیرو دست‌نخورده
+// ISR: HTML کش‌شده ۶۰ ثانیه
 export const revalidate = 60;
 
 export const metadata: Metadata = {
@@ -48,25 +46,6 @@ export const metadata: Metadata = {
   description:
     "خرید شادجیل، ،  و سوغات از فروشگاه تخصصی شادجیل",
 };
-
-function HomeHeroPreloads() {
-  return (
-    <>
-      <link
-        rel="preload"
-        as="image"
-        href="/hero/hero-poster.webp"
-        type="image/webp"
-      />
-      <link
-        rel="preload"
-        as="image"
-        href="/hero/frames/frame-001.webp"
-        type="image/webp"
-      />
-    </>
-  );
-}
 
 export default async function HomePage() {
   const productService = new ProductService();
@@ -182,11 +161,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <>
-      <HomeHeroPreloads />
-      <HeroScroll />
-      <HomeAfterHero>
-        <main className="mx-auto w-full max-w-none space-y-14 px-4 py-10 md:py-14">
+    <main className="mx-auto w-full max-w-none space-y-14 px-4 py-10 md:py-14">
           <section
             aria-label="اعتماد"
             className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"
@@ -303,8 +278,6 @@ export default async function HomePage() {
             <NewsletterSmsBox />
             <OrderTrackBox />
           </section>
-        </main>
-      </HomeAfterHero>
-    </>
+    </main>
   );
 }
