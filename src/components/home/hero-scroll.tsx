@@ -487,10 +487,10 @@ export function HeroScroll() {
           </div>
         </div>
 
-        {/* Scroll cue — bottom-center chevron, fades as scrub progresses */}
+        {/* Scroll cue — lower third (raised so it clears browser chrome / isn't clipped) */}
         <div
           ref={scrollCueRef}
-          className="pointer-events-none absolute inset-x-0 bottom-5 z-[3] flex justify-center sm:bottom-7"
+          className="pointer-events-none absolute inset-x-0 bottom-[18%] z-[3] flex justify-center sm:bottom-[16%]"
           style={{ opacity: firstReady ? 1 : 0 }}
           aria-hidden
         >
