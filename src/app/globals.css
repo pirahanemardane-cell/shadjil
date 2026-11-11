@@ -548,6 +548,21 @@ img, video, canvas, svg {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Hero copy entrance over scroll-scrub stage */
+@keyframes heroCopyIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-hero-copy-in {
+  animation: heroCopyIn 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* Luma spin loader */
 @keyframes loaderAnim {
   0% { inset: 0 35px 35px 0; }

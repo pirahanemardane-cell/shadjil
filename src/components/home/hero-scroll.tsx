@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const FRAME_COUNT = 70;
@@ -15,7 +16,7 @@ function frameSrc(i: number) {
 }
 
 /**
- * Full-bleed scroll-scrub hero — frames only, no overlay copy/CTA.
+ * Full-bleed scroll-scrub hero with readable RTL copy over busy frames.
  */
 export function HeroScroll() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -213,7 +214,6 @@ export function HeroScroll() {
           minHeight: "100vh",
           width: "100vw",
           backgroundColor: "#111",
-          contain: "strict",
         }}
       >
         {!firstReady ? (
@@ -238,6 +238,60 @@ export function HeroScroll() {
           }}
           aria-hidden
         />
+
+        {/* Soft bottom scrim — keeps type legible over beige + dense nuts */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[58%] sm:h-[52%]"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(18,14,10,0.72) 0%, rgba(18,14,10,0.42) 42%, rgba(18,14,10,0) 100%)",
+          }}
+          aria-hidden
+        />
+
+        <div
+          className="absolute inset-x-0 bottom-0 z-[2] flex justify-start px-4 pb-8 pt-6 sm:px-8 sm:pb-12 md:px-12"
+          dir="rtl"
+        >
+          <div
+            className={
+              firstReady
+                ? "hero-copy-panel max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 animate-hero-copy-in"
+                : "hero-copy-panel max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 opacity-0"
+            }
+            style={{
+              background: "rgba(18, 14, 10, 0.55)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
+            }}
+          >
+            <h1
+              className="font-extrabold text-[1.55rem] leading-[1.45] text-white sm:text-3xl md:text-4xl"
+              style={{
+                textShadow:
+                  "0 2px 18px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.7)",
+              }}
+            >
+              شادجیل یعنی شادیِ جویدن
+            </h1>
+            <p
+              className="font-medium mt-3 text-sm leading-7 text-white/92 sm:text-base sm:leading-8"
+              style={{
+                textShadow: "0 1px 10px rgba(0,0,0,0.5)",
+              }}
+            >
+              از آجیل تا خشکبار و سوغات؛ هر لقمه یه لبخند
+            </p>
+            <Link
+              href="/products"
+              className="font-regular bg-primary text-primary-foreground hover:bg-primary/90 mt-5 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm transition-colors sm:text-[0.95rem]"
+            >
+              یه مشت شادی بردار
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );
