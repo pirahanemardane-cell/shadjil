@@ -129,8 +129,8 @@ export function Footer({
                 "transition-colors duration-300 hover:border-white/60",
               )}
               style={{
-                WebkitBackdropFilter: "blur(16px) saturate(1.5)",
-                backdropFilter: "blur(16px) saturate(1.5)",
+                WebkitBackdropFilter: "blur(16px)",
+                backdropFilter: "blur(16px)",
               }}
             >
               {/* Clip the mark inside the glass without putting overflow on the blur element */}
