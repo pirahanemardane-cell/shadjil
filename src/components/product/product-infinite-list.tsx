@@ -18,6 +18,7 @@ type Props = {
   initialHasMore: boolean;
   categorySlug?: string;
   brandSlug?: string;
+  tagSlug?: string;
   q?: string;
   sort?: "newest" | "price_asc" | "price_desc" | "popular";
   featured?: boolean;
@@ -34,6 +35,7 @@ export function ProductInfiniteList({
   initialHasMore,
   categorySlug,
   brandSlug,
+  tagSlug,
   q,
   sort,
   featured,
@@ -65,6 +67,7 @@ export function ProductInfiniteList({
         pageSize: 12,
         categorySlug,
         brandSlug,
+        tagSlug,
         q,
         sort,
         featured,
@@ -84,6 +87,7 @@ export function ProductInfiniteList({
   }, [
     categorySlug,
     brandSlug,
+    tagSlug,
     q,
     sort,
     featured,
@@ -113,6 +117,7 @@ export function ProductInfiniteList({
         pageSize: 12,
         categorySlug,
         brandSlug,
+        tagSlug,
         q,
         sort,
         featured,
@@ -147,6 +152,7 @@ export function ProductInfiniteList({
     page,
     categorySlug,
     brandSlug,
+    tagSlug,
     q,
     sort,
     featured,
@@ -172,7 +178,7 @@ export function ProductInfiniteList({
     return () => observer.disconnect();
   }, [loadMore]);
 
-  if (products?.length ?? 0 === 0) {
+  if ((products?.length ?? 0) === 0) {
     return (
       <EmptyBlock
         title="محصولی یافت نشد"

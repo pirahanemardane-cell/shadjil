@@ -75,7 +75,7 @@ export class ProductRepository extends BaseRepository {
       }
     }
 
-    // برچسب
+    // برند
     if (filters.brandSlug) {
       if (isBlockedBrand({ slug: filters.brandSlug, name: filters.brandSlug })) {
         // Blocked brand — force empty product set
@@ -91,6 +91,41 @@ export class ProductRepository extends BaseRepository {
       }
     }
 
+    // برچسب محصول (product_tags → product_tag_map)
+    if (filters.tagSlug) {
+      let tagSlug = String(filters.tagSlug);
+      for (let i = 0; i < 3; i++) {
+        try {
+          const d = decodeURIComponent(tagSlug);
+          if (d === tagSlug) break;
+          tagSlug = d;
+        } catch {
+          break;
+        }
+      }
+      const { data: tag } = await client
+        .from("product_tags")
+        .select("id")
+        .eq("slug", tagSlug)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (!tag) {
+        query = query.eq("id", "00000000-0000-0000-0000-000000000000");
+      } else {
+        const { data: mapRows } = await client
+          .from("product_tag_map")
+          .select("product_id")
+          .eq("tag_id", (tag as { id: string }).id);
+        const ids = ((mapRows ?? []) as { product_id: string }[]).map(
+          (r) => r.product_id,
+        );
+        if (!ids.length) {
+          query = query.eq("id", "00000000-0000-0000-0000-000000000000");
+        } else {
+          query = query.in("id", ids);
+        }
+      }
+    }
 
     // فیلتر attribute (facet) — AND بین attributeها
     if (filters.attrs && Object.keys(filters.attrs).length > 0) {

@@ -462,6 +462,8 @@ export type CreateOrderPayload = {
   province?: string;
   postal?: string;
   note?: string;
+  /** اختیاری — برای ایمیل تأیید سفارش مهمان */
+  email?: string;
   discountCode?: string;
   paymentMethod?: "cod" | "online";
   shippingMethodId?: string;
