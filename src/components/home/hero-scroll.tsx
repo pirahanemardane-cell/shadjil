@@ -282,24 +282,25 @@ export function HeroScroll() {
           aria-hidden
         />
 
+        {/* Soft center vignette — keeps mid-frame type legible over busy nuts */}
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[58%] sm:h-[52%]"
+          className="pointer-events-none absolute inset-0 z-[1]"
           style={{
             background:
-              "linear-gradient(to top, rgba(18,14,10,0.72) 0%, rgba(18,14,10,0.42) 42%, rgba(18,14,10,0) 100%)",
+              "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(18,14,10,0.58) 0%, rgba(18,14,10,0.28) 45%, rgba(18,14,10,0) 72%)",
           }}
           aria-hidden
         />
 
         <div
-          className="absolute inset-x-0 bottom-0 z-[2] flex justify-start px-4 pb-8 pt-6 sm:px-8 sm:pb-12 md:px-12"
+          className="absolute inset-0 z-[2] flex items-center justify-center px-4 sm:px-8"
           dir="rtl"
         >
           <div
             className={
               firstReady
-                ? "hero-copy-panel w-full max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 animate-hero-copy-in"
-                : "hero-copy-panel w-full max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 opacity-0"
+                ? "hero-copy-panel w-full max-w-2xl rounded-2xl px-5 py-5 text-center sm:px-8 sm:py-7 animate-hero-copy-in"
+                : "hero-copy-panel w-full max-w-2xl rounded-2xl px-5 py-5 text-center sm:px-8 sm:py-7 opacity-0"
             }
             style={{
               background: "rgba(18, 14, 10, 0.55)",
@@ -309,11 +310,11 @@ export function HeroScroll() {
               boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
             }}
           >
-            <div className="relative grid">
+            <div className="relative grid place-items-center">
               {/* Phase 1 — frames 1–22 */}
               <div
                 ref={phase1Ref}
-                className="col-start-1 row-start-1"
+                className="col-start-1 row-start-1 w-full"
                 style={{ opacity: 1 }}
               >
                 <h1
@@ -327,7 +328,7 @@ export function HeroScroll() {
               {/* Phase 2 — frames 23–46 */}
               <div
                 ref={phase2Ref}
-                className="col-start-1 row-start-1"
+                className="col-start-1 row-start-1 w-full"
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
@@ -342,7 +343,7 @@ export function HeroScroll() {
               {/* Phase 3 — frames 47–70 */}
               <div
                 ref={phase3Ref}
-                className="col-start-1 row-start-1 flex items-center"
+                className="col-start-1 row-start-1 flex w-full items-center justify-center"
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
