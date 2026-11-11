@@ -92,9 +92,12 @@ export function Footer({
           </div>
         </div>
 
+        {/* Soft fade above chrome — keep below watermark so glass can see “Shadjil” */}
+        <div className="from-background via-background/80 to-background/40 pointer-events-none absolute bottom-28 z-0 h-24 w-full bg-gradient-to-t blur-[1em]" />
+
         {/* Large background text */}
         <div
-          className="text-primary/35 pointer-events-none absolute bottom-8 left-1/2 z-0 max-w-[95vw] -translate-x-1/2 whitespace-nowrap px-4 text-center leading-none font-extrabold select-none sm:bottom-8 md:bottom-0"
+          className="text-primary/35 pointer-events-none absolute bottom-8 left-1/2 z-[1] max-w-[95vw] -translate-x-1/2 overflow-hidden whitespace-nowrap px-4 text-center leading-none font-extrabold select-none sm:bottom-8 md:bottom-0"
           style={{
             fontSize: "clamp(1.35rem, 9vw, 9.5rem)",
             letterSpacing: "-0.02em",
@@ -106,17 +109,16 @@ export function Footer({
         {/* Lower logo + side borders — خط‌ها حذف نشوند؛ نزدیک لوگو پروضعیت محصول، لبه محو */}
         <div
           dir="ltr"
-          className="pointer-events-none absolute bottom-12 left-1/2 z-10 flex w-[min(100%,42rem)] -translate-x-1/2 items-center px-4 sm:bottom-14 md:bottom-20 md:w-[min(100%,56rem)] lg:w-[min(100%,64rem)]"
+          className="pointer-events-none absolute bottom-12 left-1/2 z-10 flex w-[min(100%,42rem)] max-w-full -translate-x-1/2 items-center px-4 sm:bottom-14 md:bottom-20 md:w-[min(100%,56rem)] lg:w-[min(100%,64rem)]"
         >
           <div className="bg-gradient-to-r from-transparent to-primary/70 h-px min-w-0 flex-1" />
           <div
-            className="border-border/60 bg-background/70 pointer-events-auto relative mx-0 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border p-2 shadow-sm backdrop-blur-md transition-colors duration-300 hover:border-primary supports-[backdrop-filter]:bg-background/60 sm:h-20 sm:w-20 md:h-24 md:w-24"
+            className="border-border/50 bg-background/40 pointer-events-auto relative mx-0 flex h-14 w-14 max-h-14 max-w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border p-1.5 shadow-sm backdrop-blur-xl backdrop-saturate-150 transition-colors duration-300 hover:border-primary supports-[backdrop-filter]:bg-background/25 sm:h-20 sm:w-20 sm:max-h-20 sm:max-w-20 sm:p-2 md:h-24 md:w-24 md:max-h-24 md:max-w-24"
           >
             {brandIcon}
           </div>
           <div className="bg-gradient-to-l from-transparent to-primary/70 h-px min-w-0 flex-1" />
         </div>
-        <div className="from-background via-background/80 to-background/40 absolute bottom-28 h-24 w-full bg-gradient-to-t blur-[1em]" />
       </footer>
     </section>
   );
