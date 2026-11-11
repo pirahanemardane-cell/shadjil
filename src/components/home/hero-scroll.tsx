@@ -10,18 +10,39 @@ const SCROLL_VH = 380;
 const EAGER_COUNT = 16;
 /** Versioned path — busts immutable CDN cache from older cartoon frames70 */
 const HERO_ASSET_BASE = "/hero/f70b1";
+/** Soft crossfade width at phase boundaries (1-based frames) */
+const PHASE_FADE = 3.25;
 
 function frameSrc(i: number) {
   return `${HERO_ASSET_BASE}/frame-${String(i).padStart(3, "0")}.webp`;
 }
 
+/** Trapezoid membership for a 1-based frame range with soft edges */
+function phaseOpacity(frame: number, start: number, end: number, fade = PHASE_FADE) {
+  if (frame <= start - fade || frame >= end + fade) return 0;
+  if (frame < start) return (frame - (start - fade)) / fade;
+  if (frame > end) return (end + fade - frame) / fade;
+  return 1;
+}
+
+function phaseOpacities(frame1Based: number) {
+  return [
+    phaseOpacity(frame1Based, 1, 22),
+    phaseOpacity(frame1Based, 23, 46),
+    phaseOpacity(frame1Based, 47, 70),
+  ] as const;
+}
+
 /**
- * Full-bleed scroll-scrub hero with readable RTL copy over busy frames.
+ * Full-bleed scroll-scrub hero with phased RTL copy that crossfades by frame range.
  */
 export function HeroScroll() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const phase1Ref = useRef<HTMLDivElement>(null);
+  const phase2Ref = useRef<HTMLDivElement>(null);
+  const phase3Ref = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<(HTMLImageElement | null)[]>(
     new Array(FRAME_COUNT).fill(null),
   );
@@ -30,6 +51,20 @@ export function HeroScroll() {
   const pendingProgressRef = useRef(0);
   const smoothProgressRef = useRef(0);
   const [firstReady, setFirstReady] = useState(false);
+
+  const applyPhaseOpacities = useCallback((frame1Based: number) => {
+    const opacities = phaseOpacities(frame1Based);
+    const els = [phase1Ref.current, phase2Ref.current, phase3Ref.current];
+    for (let i = 0; i < 3; i++) {
+      const el = els[i];
+      if (!el) continue;
+      const o = opacities[i];
+      el.style.opacity = String(o);
+      el.style.visibility = o < 0.02 ? "hidden" : "visible";
+      el.style.pointerEvents = o > 0.45 ? "auto" : "none";
+      el.setAttribute("aria-hidden", o < 0.35 ? "true" : "false");
+    }
+  }, []);
 
   const drawIndex = useCallback((idx: number, force = false) => {
     if (!force && idx === lastIdxRef.current) return;
@@ -99,7 +134,10 @@ export function HeroScroll() {
             imgs[i] = img;
             if (i === 0) {
               setFirstReady(true);
-              requestAnimationFrame(() => drawIndex(0, true));
+              requestAnimationFrame(() => {
+                drawIndex(0, true);
+                applyPhaseOpacities(1);
+              });
             } else if (i === lastIdxRef.current) {
               requestAnimationFrame(() => drawIndex(i, true));
             }
@@ -112,7 +150,6 @@ export function HeroScroll() {
 
     (async () => {
       await loadOne(0);
-      // Burst-load early frames so the first scrub stretch stays crisp
       const eagerEnd = Math.min(EAGER_COUNT, FRAME_COUNT);
       await Promise.all(
         Array.from({ length: eagerEnd - 1 }, (_, k) => loadOne(k + 1)),
@@ -141,13 +178,12 @@ export function HeroScroll() {
     return () => {
       cancelled = true;
     };
-  }, [drawIndex]);
+  }, [applyPhaseOpacities, drawIndex]);
 
   useEffect(() => {
     if (!firstReady) return;
 
     const applyProgress = (raw: number) => {
-      // Light EMA keeps scrub fluid without noticeable lag
       const prev = smoothProgressRef.current;
       const smoothed = prev + (raw - prev) * 0.55;
       smoothProgressRef.current = Math.abs(raw - prev) < 0.002 ? raw : smoothed;
@@ -156,7 +192,10 @@ export function HeroScroll() {
         FRAME_COUNT - 1,
         Math.max(0, Math.round(p * (FRAME_COUNT - 1))),
       );
+      // Continuous 1-based frame for soft phase crossfades
+      const frame1 = 1 + p * (FRAME_COUNT - 1);
       drawIndex(idx);
+      applyPhaseOpacities(frame1);
     };
 
     const measure = () => {
@@ -193,7 +232,11 @@ export function HeroScroll() {
       ro?.disconnect();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [drawIndex, firstReady]);
+  }, [applyPhaseOpacities, drawIndex, firstReady]);
+
+  const textShadowStrong =
+    "0 2px 18px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.7)";
+  const textShadowSoft = "0 1px 10px rgba(0,0,0,0.5)";
 
   return (
     <section
@@ -239,7 +282,6 @@ export function HeroScroll() {
           aria-hidden
         />
 
-        {/* Soft bottom scrim — keeps type legible over beige + dense nuts */}
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[58%] sm:h-[52%]"
           style={{
@@ -256,8 +298,8 @@ export function HeroScroll() {
           <div
             className={
               firstReady
-                ? "hero-copy-panel max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 animate-hero-copy-in"
-                : "hero-copy-panel max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 opacity-0"
+                ? "hero-copy-panel w-full max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 animate-hero-copy-in"
+                : "hero-copy-panel w-full max-w-xl rounded-2xl px-5 py-5 sm:px-7 sm:py-6 opacity-0"
             }
             style={{
               background: "rgba(18, 14, 10, 0.55)",
@@ -267,29 +309,51 @@ export function HeroScroll() {
               boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
             }}
           >
-            <h1
-              className="font-extrabold text-[1.55rem] leading-[1.45] text-white sm:text-3xl md:text-4xl"
-              style={{
-                textShadow:
-                  "0 2px 18px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.7)",
-              }}
-            >
-              شادجیل یعنی شادیِ جویدن
-            </h1>
-            <p
-              className="font-medium mt-3 text-sm leading-7 text-white/92 sm:text-base sm:leading-8"
-              style={{
-                textShadow: "0 1px 10px rgba(0,0,0,0.5)",
-              }}
-            >
-              از آجیل تا خشکبار و سوغات؛ هر لقمه یه لبخند
-            </p>
-            <Link
-              href="/products"
-              className="font-regular bg-primary text-primary-foreground hover:bg-primary/90 mt-5 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm transition-colors sm:text-[0.95rem]"
-            >
-              یه مشت شادی بردار
-            </Link>
+            <div className="relative grid">
+              {/* Phase 1 — frames 1–22 */}
+              <div
+                ref={phase1Ref}
+                className="col-start-1 row-start-1"
+                style={{ opacity: 1 }}
+              >
+                <h1
+                  className="font-extrabold text-[1.55rem] leading-[1.45] text-white sm:text-3xl md:text-4xl"
+                  style={{ textShadow: textShadowStrong }}
+                >
+                  شادجیل یعنی شادیِ جویدن
+                </h1>
+              </div>
+
+              {/* Phase 2 — frames 23–46 */}
+              <div
+                ref={phase2Ref}
+                className="col-start-1 row-start-1"
+                style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
+                aria-hidden
+              >
+                <p
+                  className="font-medium text-base leading-8 text-white/95 sm:text-lg sm:leading-9 md:text-xl"
+                  style={{ textShadow: textShadowSoft }}
+                >
+                  از آجیل تا خشکبار و سوغات؛ هر لقمه یه لبخند
+                </p>
+              </div>
+
+              {/* Phase 3 — frames 47–70 */}
+              <div
+                ref={phase3Ref}
+                className="col-start-1 row-start-1 flex items-center"
+                style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
+                aria-hidden
+              >
+                <Link
+                  href="/products"
+                  className="font-regular bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm transition-colors sm:px-6 sm:py-3 sm:text-base"
+                >
+                  یه مشت شادی بردار
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
