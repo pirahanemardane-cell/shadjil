@@ -18,7 +18,8 @@ const sizes = {
   footer: {
     width: 80,
     height: 80,
-    className: "h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20",
+    // Stay inside the frosted footer shape (padded box) on mobile/tablet/desktop
+    className: "h-10 w-10 max-h-full max-w-full sm:h-16 sm:w-16 md:h-20 md:w-20",
   },
 };
 
