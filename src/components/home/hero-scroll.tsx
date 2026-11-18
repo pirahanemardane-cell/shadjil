@@ -482,9 +482,6 @@ export function HeroScroll() {
                   type="button"
                   label="یه مشت شادی بردار"
                   className="h-11 w-[13.5rem] font-black sm:h-12 sm:w-56"
-                  accentFrom="#99B012"
-                  accentTo="#7A8E0E"
-                  dotColor="#1a1a0a"
                   onClick={() => router.push("/products")}
                 />
               </div>

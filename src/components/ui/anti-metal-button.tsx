@@ -43,6 +43,12 @@ const DoubleChevron = ({ index, dotColor }: { index: number; dotColor: string })
   );
 };
 
+/** Theme-token defaults: light `--primary` #AA6031, dark `--primary` #99B012 */
+const DEFAULT_ACCENT_FROM = "var(--primary)";
+const DEFAULT_ACCENT_TO =
+  "color-mix(in srgb, var(--primary) 78%, #1a1208)";
+const DEFAULT_DOT_COLOR = "var(--primary-foreground)";
+
 export const AntiMetalButton = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -57,11 +63,9 @@ export const AntiMetalButton = React.forwardRef<
       className,
       children,
       label,
-      // شادجیل brand: bright green accent panel on dark anti-metal shell
-      accentFrom = "#99B012",
-      accentTo = "#7A8E0E",
-      // Dark dots contrast on the lime accent panel
-      dotColor = "#1a1a0a",
+      accentFrom = DEFAULT_ACCENT_FROM,
+      accentTo = DEFAULT_ACCENT_TO,
+      dotColor = DEFAULT_DOT_COLOR,
       ...props
     },
     ref
@@ -73,9 +77,13 @@ export const AntiMetalButton = React.forwardRef<
         ref={ref}
         className={cn(
           // Wider default for Persian CTA labels; logical insets for RTL
-          "group/btn relative inline-flex h-11 w-52 overflow-hidden rounded-xl transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "bg-[linear-gradient(180deg,#1a1a1a_0%,#0a0a0a_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_12px_rgba(0,0,0,0.18)]",
-          "dark:bg-[linear-gradient(180deg,#ffffff_0%,#ededed_100%)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_4px_12px_rgba(0,0,0,0.35)]",
+          "group/btn relative inline-flex h-11 w-52 overflow-hidden rounded-xl transition-[transform,box-shadow,filter] duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          // Light: warm brown-metal shell (brand #AA6031 family)
+          "bg-[linear-gradient(180deg,#3a2418_0%,#1a100c_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_4px_12px_rgba(26,16,12,0.28)]",
+          "hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_6px_16px_rgba(170,96,49,0.35)]",
+          // Dark: soft olive-metal shell (brand #99B012 family)
+          "dark:bg-[linear-gradient(180deg,#f4f6ea_0%,#e4e8d2_100%)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_4px_12px_rgba(0,0,0,0.35)]",
+          "dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_6px_16px_rgba(153,176,18,0.4)]",
           className
         )}
         {...props}
@@ -95,17 +103,17 @@ export const AntiMetalButton = React.forwardRef<
           }
         `}</style>
 
-        <span className="absolute inset-y-0 end-4 flex items-center text-[14px] font-medium tracking-tight text-white dark:text-[#0a0a0a]">
+        <span className="absolute inset-y-0 end-4 z-0 flex items-center text-[14px] font-medium tracking-tight text-primary-foreground">
           {content}
         </span>
 
         <span
           aria-hidden="true"
-          className="absolute bottom-1 start-1 top-1 z-10 flex w-9 items-center justify-start gap-2.5 overflow-hidden rounded-md ps-3 pe-2.5 transition-[width,gap] duration-200 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover/btn:w-[calc(100%-0.5rem)]"
+          className="absolute bottom-1 start-1 top-1 z-10 flex w-9 items-center justify-start gap-2.5 overflow-hidden rounded-md ps-3 pe-2.5 transition-[width,gap,filter] duration-200 ease-[cubic-bezier(0.65,0,0.35,1)] group-hover/btn:w-[calc(100%-0.5rem)] group-hover/btn:brightness-110 group-active/btn:brightness-95"
           style={{
             background: `linear-gradient(180deg, ${accentFrom} 0%, ${accentTo} 100%)`,
             boxShadow:
-              "inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)",
+              "inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -2px 4px rgba(0,0,0,0.14), 0 2px 4px rgba(0,0,0,0.08)",
           }}
         >
           <DoubleChevron index={0} dotColor={dotColor} />
