@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AntiMetalButton } from "@/components/ui/anti-metal-button";
 
 const FRAME_COUNT = 70;
 /** Tall scrub runway — denser frames = smoother scrub feel */
@@ -77,6 +78,7 @@ function fitSingleLine(el: HTMLElement | null, availPx: number) {
  * Full-bleed scroll-scrub hero with phased RTL copy that crossfades by frame range.
  */
 export function HeroScroll() {
+  const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -469,19 +471,25 @@ export function HeroScroll() {
                 </p>
               </div>
 
-              {/* Phase 3 — frames 47–70 — standard button chrome; heavy label */}
+              {/* Phase 3 — frames 47–70 — AntiMetal CTA; heavy label */}
               <div
                 ref={phase3Ref}
                 className="col-start-1 row-start-1 flex w-full items-center justify-center"
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
-                <Link
-                  href="/products"
-                  className="hero-cta-button animate-hero-cta-pulse font-black inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border-2 border-[#AA6031] bg-white px-5 text-sm text-[#AA6031] transition-colors hover:bg-[#fff8f3] dark:border-[#99B012] dark:bg-white dark:text-[#99B012] dark:hover:bg-[#f7fbe8] sm:h-12 sm:px-6 sm:text-base"
-                >
-                  یه مشت شادی بردار
-                </Link>
+                {/* Halo/pulse on wrapper so anti-metal shell shadows stay intact */}
+                <div className="hero-cta-button animate-hero-cta-pulse rounded-xl">
+                  <AntiMetalButton
+                    type="button"
+                    label="یه مشت شادی بردار"
+                    className="h-11 w-[13.5rem] font-black sm:h-12 sm:w-56"
+                    accentFrom="#99B012"
+                    accentTo="#7A8E0E"
+                    dotColor="#1a1a0a"
+                    onClick={() => router.push("/products")}
+                  />
+                </div>
               </div>
             </div>
           </div>
