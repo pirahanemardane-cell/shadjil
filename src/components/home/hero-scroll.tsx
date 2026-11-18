@@ -478,18 +478,15 @@ export function HeroScroll() {
                 style={{ opacity: 0, visibility: "hidden", pointerEvents: "none" }}
                 aria-hidden
               >
-                {/* Halo/pulse on wrapper so anti-metal shell shadows stay intact */}
-                <div className="hero-cta-button animate-hero-cta-pulse rounded-xl">
-                  <AntiMetalButton
-                    type="button"
-                    label="یه مشت شادی بردار"
-                    className="h-11 w-[13.5rem] font-black sm:h-12 sm:w-56"
-                    accentFrom="#99B012"
-                    accentTo="#7A8E0E"
-                    dotColor="#1a1a0a"
-                    onClick={() => router.push("/products")}
-                  />
-                </div>
+                <AntiMetalButton
+                  type="button"
+                  label="یه مشت شادی بردار"
+                  className="h-11 w-[13.5rem] font-black sm:h-12 sm:w-56"
+                  accentFrom="#99B012"
+                  accentTo="#7A8E0E"
+                  dotColor="#1a1a0a"
+                  onClick={() => router.push("/products")}
+                />
               </div>
             </div>
           </div>
