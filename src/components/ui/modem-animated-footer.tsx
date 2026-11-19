@@ -42,7 +42,7 @@ export function Footer({
   return (
     // overflow-x only — full overflow:hidden breaks backdrop-filter on the glass mark
     <section className={cn("relative mt-0 w-full overflow-x-hidden", className)}>
-      <footer className="border-t bg-background relative mt-20">
+      <footer className="bg-background relative">
         <div className="relative mx-auto flex min-h-[26rem] w-full max-w-7xl flex-col justify-between p-4 py-8 sm:min-h-[28rem] md:min-h-[30rem] md:py-10">
           <div className="mb-8 flex w-full flex-col sm:mb-10 md:mb-6">
             <div className="flex w-full flex-col items-center">
