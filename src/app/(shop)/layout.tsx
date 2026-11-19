@@ -27,9 +27,7 @@ export default function ShopLayout({
             </div>
           </div>
           <div className="border-border border-t">
-            <div className="mx-auto flex w-full max-w-6xl flex-wrap items-start justify-between gap-4 px-4 py-4">
-              <FooterContact />
-            </div>
+            <FooterContact />
             <SiteFooter />
           </div>
           <BackToTop />
