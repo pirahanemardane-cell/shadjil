@@ -59,10 +59,15 @@ function p(
   return { key, envKey: `MELIPAYAMAK_BODY_${key}`, arity, panelText, priority };
 }
 
+/** Approved Melipayamak OTP body (single var {0} = code only). Panel ID: 592259 */
+const OTP_PANEL_TEXT =
+  "کد تأیید شما در شادجیل: {0} میباشد. https://shadjil.ir/";
+
 export const SMS_PATTERNS: Record<SmsPatternKey, PatternDef> = {
-  OTP_REGISTER: p("OTP_REGISTER", 3, "{0} عزیز کد تأیید ثبت‌نام شما در شادجیل: {1} این کد تا {2} دقیقه معتبر است. https://shadjil.ir لغو11"),
-  OTP_LOGIN: p("OTP_LOGIN", 2, "{0} عزیز کد ورود به حساب شادجیل: {1} این کد را در اختیار دیگران قرار ندهید. https://shadjil.ir لغو11"),
-  OTP_RECOVERY: p("OTP_RECOVERY", 2, "{0} عزیز کد بازیابی حساب شادجیل: {1} در صورت درخواست نکردن این پیام را نادیده بگیرید. https://shadjil.ir لغو11"),
+  // Login / register / recovery share the same single-variable approved pattern.
+  OTP_REGISTER: p("OTP_REGISTER", 1, OTP_PANEL_TEXT),
+  OTP_LOGIN: p("OTP_LOGIN", 1, OTP_PANEL_TEXT),
+  OTP_RECOVERY: p("OTP_RECOVERY", 1, OTP_PANEL_TEXT),
   SECURITY_PHONE_CHANGE: p("SECURITY_PHONE_CHANGE", 2, "{0} عزیز شماره موبایل حساب شما در شادجیل به {1} تغییر یافت. اگر شما نبودید فوراً با پشتیبانی تماس بگیرید. https://shadjil.ir لغو11"),
   SECURITY_PASSWORD_CHANGE: p("SECURITY_PASSWORD_CHANGE", 1, "{0} عزیز رمز عبور حساب شما در شادجیل با موفقیت تغییر کرد. اگر شما نبودید فوراً اقدام کنید. https://shadjil.ir لغو11"),
   SECURITY_SUSPICIOUS_LOGIN: p("SECURITY_SUSPICIOUS_LOGIN", 2, "{0} عزیز ورود جدید از دستگاه/IP مشکوک به حساب شادجیل شما ثبت شد. زمان: {1} https://shadjil.ir لغو11", "recommended"),
@@ -99,10 +104,25 @@ export const SMS_PATTERNS: Record<SmsPatternKey, PatternDef> = {
   ADMIN_SMS_OUTAGE: p("ADMIN_SMS_OUTAGE", 1, "اختلال در سرویس پیامک شادجیل: {0} https://shadjil.ir لغو11", "recommended"),
 };
 
+const OTP_PATTERN_KEYS = new Set<SmsPatternKey>([
+  "OTP_LOGIN",
+  "OTP_REGISTER",
+  "OTP_RECOVERY",
+]);
+
+/**
+ * Resolve Melipayamak bodyId for a pattern key.
+ * OTP login/register/recovery: MELIPAYAMAK_BODY_<KEY> → MELIPAYAMAK_BODY_OTP_LOGIN → MELIPAYAMAK_BODY_ID.
+ * Production OTP body ID for this project: 592259 (set via MELIPAYAMAK_BODY_OTP_LOGIN).
+ */
 export function resolveBodyId(key: SmsPatternKey): string | undefined {
   const def = SMS_PATTERNS[key];
   const specific = process.env[def.envKey]?.trim();
   if (specific) return specific;
-  if (key === "OTP_LOGIN") return process.env.MELIPAYAMAK_BODY_ID?.trim();
+  if (OTP_PATTERN_KEYS.has(key)) {
+    const otpLogin = process.env.MELIPAYAMAK_BODY_OTP_LOGIN?.trim();
+    if (otpLogin) return otpLogin;
+    return process.env.MELIPAYAMAK_BODY_ID?.trim();
+  }
   return undefined;
 }
